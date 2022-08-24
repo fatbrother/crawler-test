@@ -116,7 +116,7 @@ def main():
                         line[0:line.find('  ')]
                     driver.get(url)
                     # wait for the page to load
-                    driver.implicitly_wait(3)
+                    # driver.implicitly_wait(3)
                     elements = driver.find_elements(
                         By.CLASS_NAME, 'problem-item')
                     # write element into Description.txt
@@ -149,6 +149,7 @@ def main():
         for key in problemSets:
             for problem in problemSets[key]:
                 title = problem
+                id = problem[0:problem.find(' ') - 1]
                 # if the last character of title is a punctuation, delete it
                 if title[-1] in string.punctuation:
                     title = title[:-1]
@@ -163,11 +164,10 @@ def main():
                     'chromedriver.exe', chrome_options=options)
                 driver.minimize_window()
                 # goto the problem page
-                id = line[0:line.find(' ') - 1]
                 url = 'https://judgegirl.csie.org/problem/0/' + id
                 driver.get(url)
                 # wait for the page to load
-                driver.implicitly_wait(3)
+                # driver.implicitly_wait(3)
                 
                 if not os.path.exists(key+'/'+title):
                     os.mkdir(key+'/'+title)
@@ -202,18 +202,21 @@ def main():
                 if len(photos) != 0:
                     for index, photo in enumerate(photos):
                         link = photo.get_attribute('src')
-                        # save the photo
-                        urllib.request.urlretrieve(link, key+'/'+title+'/'+str(index)+'.jpg')
-
+                        # save the phot
+                        if 'https://judgegirl.csie.org/images/problems/' in link:
+                            urllib.request.urlretrieve(link, key+'/'+title+'/'+link[44:])
+                            
                 if not os.path.exists(key+'/'+title+'/testCases'):
                     os.mkdir(key+'/'+title+'/testCases')
                 # find the elements that inside text is 'Download Testdata' by XPATH
-                link = driver.find_element(
-                    By.XPATH, '//*[contains(text(), " Download Testdata")]')
+                link = 'https://judgegirl.csie.org/testdata/download/' + id
+                print(title)
+                print(url)
+                print(link)
                 # goto the testCase page
-                driver.get(link.get_attribute('href'))
+                driver.get(link)
                 # wait for the page to load
-                driver.implicitly_wait(3)
+                # driver.implicitly_wait(3)
 
                 content = driver.find_element(By.CLASS_NAME, 'content')
                 menu = content.find_element(By.CLASS_NAME, 'pure-g')
